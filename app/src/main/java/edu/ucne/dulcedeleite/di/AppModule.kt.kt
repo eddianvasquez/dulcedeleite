@@ -17,6 +17,13 @@ import edu.ucne.dulcedeleite.data.repository.PedidoRepositoryImpl
 import edu.ucne.dulcedeleite.data.repository.ProductoRepositoryImpl
 import edu.ucne.dulcedeleite.domain.repository.PedidoRepository
 import edu.ucne.dulcedeleite.domain.repository.ProductoRepository
+
+import edu.ucne.dulcedeleite.data.remote.AuthApi
+import edu.ucne.dulcedeleite.data.remote.AuthRemoteDataSource
+import edu.ucne.dulcedeleite.data.repository.AuthRepositoryImpl
+import edu.ucne.dulcedeleite.domain.repository.AuthRepository
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -52,15 +59,52 @@ object AppModule {
             .add(KotlinJsonAdapterFactory())
             .build()
     }
+    
+    // --- AUTENTICACIÓN (TOKENS) ---
+    @Provides
+    @Singleton
+    fun provideAuthTokenManager(@ApplicationContext context: Context): edu.ucne.dulcedeleite.data.local.datastore.AuthTokenManager {
+        return edu.ucne.dulcedeleite.data.local.datastore.AuthTokenManager(context)
+    }
 
     @Provides
     @Singleton
-    fun provideApi(moshi: Moshi): DulceDeleiteApi {
+    fun provideAuthInterceptor(tokenManager: edu.ucne.dulcedeleite.data.local.datastore.AuthTokenManager): edu.ucne.dulcedeleite.data.remote.AuthInterceptor {
+        return edu.ucne.dulcedeleite.data.remote.AuthInterceptor(tokenManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(authInterceptor: edu.ucne.dulcedeleite.data.remote.AuthInterceptor): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
+            .build()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://DulceDeleite.somee.com/") // Tu URL de Somee
+            .baseUrl("http://DulceDeleite.somee.com/")
+            .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
-            .create(DulceDeleiteApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideApi(retrofit: Retrofit): DulceDeleiteApi {
+        return retrofit.create(DulceDeleiteApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(retrofit: Retrofit): AuthApi {
+        return retrofit.create(AuthApi::class.java)
     }
 
     // --- 3. REPOSITORIOS ---
@@ -80,5 +124,13 @@ object AppModule {
         remoteDataSource: DulceDeleiteRemoteDataSource
     ): PedidoRepository {
         return PedidoRepositoryImpl(localDataSource, remoteDataSource)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepository {
+        return authRepositoryImpl
     }
 }
