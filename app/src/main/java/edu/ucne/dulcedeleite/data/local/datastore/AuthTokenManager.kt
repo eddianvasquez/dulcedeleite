@@ -21,12 +21,18 @@ class AuthTokenManager @Inject constructor(
     companion object {
         val JWT_TOKEN_KEY = stringPreferencesKey("jwt_token")
         val USER_ROLE_KEY = stringPreferencesKey("user_role")
+        val USUARIO_ID_KEY = androidx.datastore.preferences.core.intPreferencesKey("usuario_id")
+        val USER_NOMBRE_KEY = stringPreferencesKey("user_nombre")
+        val USER_CORREO_KEY = stringPreferencesKey("user_correo")
     }
 
-    suspend fun saveTokenAndRole(token: String, rol: String) {
+    suspend fun saveTokenAndRole(token: String, rol: String, usuarioId: Int, nombre: String, correo: String) {
         context.dataStore.edit { preferences ->
             preferences[JWT_TOKEN_KEY] = token
             preferences[USER_ROLE_KEY] = rol
+            preferences[USUARIO_ID_KEY] = usuarioId
+            preferences[USER_NOMBRE_KEY] = nombre
+            preferences[USER_CORREO_KEY] = correo
         }
     }
 
@@ -34,6 +40,9 @@ class AuthTokenManager @Inject constructor(
         context.dataStore.edit { preferences ->
             preferences.remove(JWT_TOKEN_KEY)
             preferences.remove(USER_ROLE_KEY)
+            preferences.remove(USUARIO_ID_KEY)
+            preferences.remove(USER_NOMBRE_KEY)
+            preferences.remove(USER_CORREO_KEY)
         }
     }
 
@@ -46,6 +55,24 @@ class AuthTokenManager @Inject constructor(
     fun getRole(): Flow<String?> {
         return context.dataStore.data.map { preferences ->
             preferences[USER_ROLE_KEY]
+        }
+    }
+
+    fun getUsuarioId(): Flow<Int?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[USUARIO_ID_KEY]
+        }
+    }
+
+    fun getNombre(): Flow<String?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[USER_NOMBRE_KEY]
+        }
+    }
+
+    fun getCorreo(): Flow<String?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[USER_CORREO_KEY]
         }
     }
 }

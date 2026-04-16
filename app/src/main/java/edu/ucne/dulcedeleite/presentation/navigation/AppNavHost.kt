@@ -35,7 +35,31 @@ fun AppNavHost(navHostController: NavHostController) {
         composable<Screen.Dashboard> {
             edu.ucne.dulcedeleite.presentation.home.MainScreen(
                 onNavigateToDetail = { id -> navHostController.navigate(Screen.ProductoDetail(id)) },
-                onNavigateToEdit = { id -> navHostController.navigate(Screen.ProductoEdit(id)) }
+                onNavigateToEdit = { id -> navHostController.navigate(Screen.ProductoEdit(id)) },
+                onNavigateToLogin = { 
+                    navHostController.navigate(Screen.Login) {
+                        popUpTo(0) { inclusive = true } // CLEARS ENTIRE BACKSTACK
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToDirecciones = { navHostController.navigate(Screen.DireccionesList) },
+                onNavigateToMetodosPago = { navHostController.navigate(Screen.MetodosPagoList) },
+                onNavigateToCarrito = { navHostController.navigate(Screen.Carrito) }
+            )
+        }
+
+        composable<Screen.Carrito> {
+            edu.ucne.dulcedeleite.presentation.carrito.CarritoScreen(
+                onNavigateBack = { navHostController.navigateUp() },
+                onNavigateToExplorar = { navHostController.navigateUp() },
+                onNavigateToCheckout = { navHostController.navigate(Screen.ResumenPedido) }
+            )
+        }
+
+        composable<Screen.ResumenPedido> {
+            edu.ucne.dulcedeleite.presentation.resumenpedido.ResumenPedidoScreen(
+                onNavigateBack = { navHostController.navigateUp() },
+                onCheckoutSuccess = { navHostController.navigate(Screen.Dashboard) { popUpTo(Screen.Dashboard) { inclusive = true } } }
             )
         }
 
@@ -47,8 +71,36 @@ fun AppNavHost(navHostController: NavHostController) {
             )
         }
 
-        composable<Screen.ProductoEdit> {
+        composable<Screen.ProductoEdit> { backStackEntry ->
             edu.ucne.dulcedeleite.presentation.proyecto.edit.ProductoEditScreen(
+                onNavigateBack = { navHostController.navigateUp() }
+            )
+        }
+
+        composable<Screen.DireccionesList> {
+            edu.ucne.dulcedeleite.presentation.direccion.list.DireccionesListScreen(
+                onNavigateToForm = { id -> navHostController.navigate(Screen.DireccionForm(id)) }
+            )
+        }
+
+        composable<Screen.DireccionForm> { backStackEntry ->
+            val args = backStackEntry.toRoute<Screen.DireccionForm>()
+            edu.ucne.dulcedeleite.presentation.direccion.form.DireccionFormScreen(
+                id = args.id,
+                onNavigateBack = { navHostController.navigateUp() }
+            )
+        }
+
+        composable<Screen.MetodosPagoList> {
+            edu.ucne.dulcedeleite.presentation.metodopago.list.MetodosPagoListScreen(
+                onNavigateToForm = { id -> navHostController.navigate(Screen.MetodoPagoForm(id)) }
+            )
+        }
+
+        composable<Screen.MetodoPagoForm> { backStackEntry ->
+            val args = backStackEntry.toRoute<Screen.MetodoPagoForm>()
+            edu.ucne.dulcedeleite.presentation.metodopago.form.MetodoPagoFormScreen(
+                id = args.id,
                 onNavigateBack = { navHostController.navigateUp() }
             )
         }

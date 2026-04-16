@@ -26,6 +26,15 @@ sealed class Screen {
     data object Pedidos : Screen()
 
     @Serializable
+    data object Carrito : Screen()
+
+    @Serializable
+    data object ResumenPedido : Screen()
+
+    @Serializable
+    data object MisPedidos : Screen()
+
+    @Serializable
     data object HomeMain : Screen()
 
     @Serializable
@@ -33,4 +42,16 @@ sealed class Screen {
 
     @Serializable
     data object Perfil : Screen()
+
+    @Serializable
+    data object DireccionesList : Screen()
+
+    @kotlinx.serialization.Serializable
+    data class DireccionForm(val id: Int) : Screen()
+
+    @Serializable
+    data object MetodosPagoList : Screen()
+
+    @kotlinx.serialization.Serializable
+    data class MetodoPagoForm(val id: Int) : Screen()
 }

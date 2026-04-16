@@ -78,7 +78,13 @@ class LoginViewModel @Inject constructor(
                     viewModelScope.launch {
                         val authData = result.data
                         if (authData?.token != null) {
-                            tokenManager.saveTokenAndRole(authData.token, authData.rol)
+                            tokenManager.saveTokenAndRole(
+                                token = authData.token,
+                                rol = authData.rol,
+                                usuarioId = authData.usuarioId,
+                                nombre = authData.nombre,
+                                correo = uiState.value.email
+                            )
                         }
                     }
                 }

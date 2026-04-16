@@ -29,7 +29,11 @@ import edu.ucne.dulcedeleite.presentation.proyecto.list.ListScreen
 @Composable
 fun MainScreen(
     onNavigateToDetail: (Int) -> Unit,
-    onNavigateToEdit: (Int) -> Unit
+    onNavigateToEdit: (Int) -> Unit,
+    onNavigateToLogin: () -> Unit,
+    onNavigateToDirecciones: () -> Unit,
+    onNavigateToMetodosPago: () -> Unit,
+    onNavigateToCarrito: () -> Unit
 ) {
     val bottomNavController = rememberNavController()
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
@@ -57,7 +61,7 @@ fun MainScreen(
                         )
                     },
                     actions = {
-                        IconButton(onClick = { /* TODO: Carrito */ }) {
+                        IconButton(onClick = onNavigateToCarrito) {
                             Icon(Icons.Default.ShoppingCart, contentDescription = "Carrito")
                         }
                     }
@@ -123,7 +127,9 @@ fun MainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable<Screen.Pedidos> {
-                PedidosScreen()
+                edu.ucne.dulcedeleite.presentation.mispedidos.MisPedidosScreen(
+                    onNavigateBack = { bottomNavController.navigateUp() }
+                )
             }
             composable<Screen.HomeMain> {
                 ListScreen(
@@ -135,7 +141,11 @@ fun MainScreen(
                 NosotrosScreen()
             }
             composable<Screen.Perfil> {
-                PerfilScreen()
+                PerfilScreen(
+                    onNavigateToLogin = onNavigateToLogin,
+                    onNavigateToDirecciones = onNavigateToDirecciones,
+                    onNavigateToMetodosPago = onNavigateToMetodosPago
+                )
             }
         }
     }

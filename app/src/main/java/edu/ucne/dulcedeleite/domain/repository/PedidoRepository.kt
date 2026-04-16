@@ -1,10 +1,9 @@
 package edu.ucne.dulcedeleite.domain.repository
 
-import edu.ucne.dulcedeleite.domain.model.Pedido
+import edu.ucne.dulcedeleite.data.remote.dto.PedidoDto
 import edu.ucne.dulcedeleite.domain.utils.Resource
 
 interface PedidoRepository {
-    // Lógica Offline-First exacta de la documentación
-    suspend fun createPedidoLocal(pedido: Pedido): Resource<Pedido>
-    suspend fun postPendingPedidos(): Resource<Unit>
+    suspend fun crearPedido(pedidoDto: PedidoDto): Resource<PedidoDto>
+    suspend fun getHistorialPedidos(usuarioId: Int): Resource<List<PedidoDto>>
 }
