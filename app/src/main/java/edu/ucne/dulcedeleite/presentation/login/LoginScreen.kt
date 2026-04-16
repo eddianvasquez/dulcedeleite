@@ -1,30 +1,16 @@
 package edu.ucne.dulcedeleite.presentation.login
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,15 +18,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.ucne.dulcedeleite.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,88 +52,122 @@ fun LoginScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Dulce Deleite", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary, fontSize = 20.sp) },
+                navigationIcon = {
+                    IconButton(onClick = { /* TODO if any */ }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Regresar", tint = MaterialTheme.colorScheme.tertiary)
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        containerColor = Color.White
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Pink circle with Cake Icon
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
             ) {
-                
-                Image(
-                    painter = painterResource(id = R.drawable.deleite_logo),
-                    contentDescription = "Dulce Deleite Logo",
-                    modifier = Modifier
-                        .size(160.dp)
-                        .clip(RoundedCornerShape(32.dp))
+                Icon(
+                    imageVector = Icons.Default.Cake,
+                    contentDescription = "Icono Pastel",
+                    modifier = Modifier.size(50.dp),
+                    tint = MaterialTheme.colorScheme.tertiary
                 )
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Text(
-                    text = "Bienvenido de vuelta",
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "¡Hola de nuevo!",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.Black
                 )
+            )
 
-                Text(
-                    text = "Inicia sesión para continuar",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Spacer(modifier = Modifier.height(48.dp))
+            Text(
+                text = "Ingresa a tu cuenta para disfrutar de los mejores postres.",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.Gray
+                ),
+                textAlign = TextAlign.Center
+            )
 
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Form
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text("Correo electrónico", fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = uiState.email,
                     onValueChange = { viewModel.onEvent(LoginUiEvent.EmailChanged(it)) },
-                    label = { Text("Correo electrónico") },
+                    placeholder = { Text("ejemplo@correo.com", color = Color.Gray) },
                     isError = uiState.emailError != null,
-                    supportingText = {
-                        if (uiState.emailError != null) {
-                            Text(text = uiState.emailError!!)
-                        }
-                    },
+                    supportingText = { if (uiState.emailError != null) Text(text = uiState.emailError!!) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                    )
+                        focusedBorderColor = MaterialTheme.colorScheme.tertiary,
+                        unfocusedBorderColor = Color(0xFFE0E0E0),
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    singleLine = true
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Contraseña", fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
+                    Text("¿Olvidaste tu contraseña?", color = MaterialTheme.colorScheme.tertiary, fontSize = 12.sp)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = uiState.password,
                     onValueChange = { viewModel.onEvent(LoginUiEvent.PasswordChanged(it)) },
-                    label = { Text("Contraseña") },
+                    placeholder = { Text("••••••••", color = Color.Gray) },
                     isError = uiState.passwordError != null,
-                    supportingText = {
-                        if (uiState.passwordError != null) {
-                            Text(text = uiState.passwordError!!)
-                        }
-                    },
+                    supportingText = { if (uiState.passwordError != null) Text(text = uiState.passwordError!!) },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    trailingIcon = {
+                        Icon(Icons.Default.Visibility, contentDescription = "Ver Contraseña", tint = MaterialTheme.colorScheme.tertiary)
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                    )
+                        focusedBorderColor = MaterialTheme.colorScheme.tertiary,
+                        unfocusedBorderColor = Color(0xFFE0E0E0),
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    ),
+                    singleLine = true
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -157,36 +177,39 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = Color.White
                     ),
                     enabled = !uiState.isLoading
                 ) {
                     if (uiState.isLoading) {
                         CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = Color.White,
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
                         Text(
                             text = "Iniciar Sesión",
-                            fontSize = 18.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
-                TextButton(onClick = onNavigateToSignUp) {
-                    Text(
-                        text = "¿No tienes cuenta? Regístrate aquí",
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+            Row(modifier = Modifier.padding(bottom = 32.dp)) {
+                Text("¿No tienes una cuenta? ", color = Color.Gray, fontSize = 14.sp)
+                Text(
+                    text = "Regístrate ahora",
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable { onNavigateToSignUp() }
+                )
             }
         }
     }

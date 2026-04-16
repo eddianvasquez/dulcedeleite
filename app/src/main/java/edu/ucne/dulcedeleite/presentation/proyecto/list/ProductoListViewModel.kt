@@ -3,6 +3,7 @@ package edu.ucne.dulcedeleite.presentation.proyecto.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import edu.ucne.dulcedeleite.domain.manager.CartManager
 import edu.ucne.dulcedeleite.domain.repository.ProductoRepository
 import edu.ucne.dulcedeleite.domain.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductoListViewModel @Inject constructor(
-    private val repository: ProductoRepository
+    private val repository: ProductoRepository,
+    private val cartManager: CartManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductoListUiState())
@@ -46,7 +48,15 @@ class ProductoListViewModel @Inject constructor(
         }
     }
 
-    fun refreshProductos() {
+    fun onEvent(event: ProductoListUiEvent) {
+        when (event) {
+            is ProductoListUiEvent.Refresh -> refreshProductos()
+            is ProductoListUiEvent.Delete -> deleteProducto(event.id)
+            is ProductoListUiEvent.AddToCart -> cartManager.agregarProducto(edu.ucne.dulcedeleite.presentation.carrito.CartItem(event.producto, 1))
+        }
+    }
+
+    private fun refreshProductos() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             repository.refreshProductos()
@@ -55,7 +65,7 @@ class ProductoListViewModel @Inject constructor(
         }
     }
 
-    fun deleteProducto(id: Int) {
+    private fun deleteProducto(id: Int) {
         viewModelScope.launch {
             repository.deleteProducto(id)
             // Error handling se podría enviar por events (SharedFlow) si se requiere

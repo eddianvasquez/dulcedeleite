@@ -133,4 +133,20 @@ object AppModule {
     ): AuthRepository {
         return authRepositoryImpl
     }
+
+    @Provides
+    @Singleton
+    fun provideDireccionRepository(
+        remoteDataSource: DulceDeleiteRemoteDataSource
+    ): edu.ucne.dulcedeleite.domain.repository.DireccionRepository {
+        return edu.ucne.dulcedeleite.data.repository.DireccionRepositoryImpl(remoteDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMetodoPagoRepository(
+        remoteDataSource: DulceDeleiteRemoteDataSource
+    ): edu.ucne.dulcedeleite.domain.repository.MetodoPagoRepository {
+        return edu.ucne.dulcedeleite.data.repository.MetodoPagoRepositoryImpl(remoteDataSource)
+    }
 }
