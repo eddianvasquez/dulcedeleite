@@ -1,5 +1,7 @@
 package edu.ucne.dulcedeleite.presentation.resumenpedido
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -105,6 +107,7 @@ class ResumenPedidoViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: ResumenPedidoUiEvent) {
         when (event) {
             is ResumenPedidoUiEvent.ToggleDireccionSheet -> {
@@ -134,6 +137,7 @@ class ResumenPedidoViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun confirmarPedido() {
         val state = uiState.value
         val userId = state.currentUserId ?: return
